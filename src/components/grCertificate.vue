@@ -1,7 +1,7 @@
 <template>
   <div class="grCertificate">
-    <div class="grCertificate-title" @click="playAnimation(4)">我的光荣证</div>
-    <div class="certificate">
+    <div class="grCertificate-title">我的光荣证</div>
+    <div class="certificate" :class="inMoveAnimation?'aniTop':''">
       <div class="userName">
         <i class="icon" :style="{ backgroundImage: 'url(' + userinfo.useImg + ')' }"></i>
         <p>{{ userinfo.name }}</p>
@@ -15,6 +15,7 @@
             v-for="(item, index) in isIcon"
             :class="inAnimation == index ? 'anim' : ''"
             @animationend="inAnimation = 6"
+            :key="index"
             :style="{ backgroundImage: 'url(../../static/' + (item ? 'icon1' : 'icon2') + '.png)' }"
           ></li>
         </ul>
@@ -22,11 +23,13 @@
           <li
             class="star"
             v-for="(item, index) in isIcon"
+            :key='index'
             :style="{ backgroundImage: 'url(../../static/' + (item ? 'icon1' : 'icon2') + '.png)' }"
           ></li>
         </ul>
       </div>
-      <p class="certificate-text">{{ userinfo.text }}</p>
+      <p class="certificate-text">{{ userinfo.text1 }}</p>
+      <p class="certificate-text">{{ userinfo.text2 }}</p>
     </div>
     <div class="box">
       <div class="firstLi">
@@ -51,7 +54,8 @@ export default {
       userinfo: {
         name: '青西',
         useImg: 'https://pic.cwyyt.cn/upload/img/20200420/152603263_useImg.png',
-        text: '人生是不断的奋斗过程，需要你的勤劳勇敢。'
+        text1: '人生是不断的奋斗过程，',
+        text2:'需要你的勤劳勇敢。'
       },
       isIcon: [false, false, false, false, false],
       giftData: [
@@ -69,25 +73,32 @@ export default {
         { name: 'DM物质', time: '2020-05-03 08:00:52' }
       ],
       inAnimation: 6,
-      dd:0
+      dd: 0,
+      inMoveAnimation:false
     };
   },
   mounted() {
-    this.fn(3)
+    // this.fn(5);
   },
   methods: {
     //连续触发
-    fn(e){
-      var self=this;
-      setTimeout(()=>{
+    fn(e) {
+      var self = this;
+      setTimeout(() => {
         self.playAnimation(self.dd);
         self.dd++;
-        if(self.dd>=e){
-          return
+        if (self.dd >= e) {
+          return;
         }
         self.fn(e);
-
-      },1500)
+      }, 1500);
+    },
+    playMoveAnimation(){
+      var self =this;
+      this.inMoveAnimation=true;
+      setTimeout(()=>{
+        self.inMoveAnimation=false
+      },2000)
     },
     //触发动画
     playAnimation(e) {
@@ -99,28 +110,50 @@ export default {
 </script>
 
 <style scoped lang="less">
+.aniTop {
+  animation-duration: 2s;
+  animation-timing-function:ease-in;
+  animation-name: move;
+  animation-fill-mode: forwards;
+}
 .anim {
-      animation-duration: 1s;
-      animation-name: twinkle;
-      animation-fill-mode: forwards;
+  animation-duration: 1s;
+  animation-name: twinkle;
+  animation-fill-mode: forwards;
+}
+@keyframes move {
+  0% {
+    left:0 ;
+  }
+  89%{
+    left: 750px;
+    opacity: 0;
+  }
+  90%{
+    left: 0;
+    opacity: 0;
+  }
+  100%{
+    opacity: 1;
+  }
 }
 @keyframes twinkle {
- 0% {
-   transform: scale(1);
- }
+  0% {
+    transform: scale(1);
+  }
 
- 90% {
-   transform: scale(4);
-   opacity: 0;
- }
-// 100%{
-//   transform: scale(2);
-//   opacity: 0;
-// }
- to {
-   transform: scale(1);
-   opacity: 0
- }
+  90% {
+    transform: scale(4);
+    opacity: 0;
+  }
+  // 100%{
+  //   transform: scale(2);
+  //   opacity: 0;
+  // }
+  to {
+    transform: scale(1);
+    opacity: 0;
+  }
 }
 .grCertificate {
   position: fixed;
@@ -149,6 +182,9 @@ export default {
       font-size: 23.07px;
       color: black;
       font-weight: 700;
+      text-align: left;
+      text-indent: 17.173vw;
+      margin-bottom: 1vh;
     }
     .certificate-title {
       font-size: 50px;

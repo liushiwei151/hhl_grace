@@ -4,38 +4,48 @@
     <div class="box box1" @click="goWeb('grCertificate')"></div>
     <div class="box box2" @click="goWeb('grList')"></div>
     <transition name="fade">
-      <div v-show='show' class="ruleContet">
-        <div class='close' @click="alertImg(false)"></div>
-      </div>
+      <div v-show="show" class="ruleContet"><div class="close" @click="alertImg(false)"></div></div>
     </transition>
   </div>
 </template>
 <script>
+import api from '../api.js';
 export default {
   name: 'home',
-  data(){
-    return{
-      show:false
-    }
-    },
+  data() {
+    return {
+      show: false
+    };
+  },
+  created() {
+  },
   methods: {
+    //获取用户信息
+    getInfo(){
+      api.info().then((res) => {
+        if(res.data.code==200){
+          console.log(res.data)
+        }
+      });
+    },
     goWeb(e) {
       this.$router.push(e);
     },
     alertImg(e) {
-      this.show=e
-    },
+      this.show = e;
+    }
   }
 };
 </script>
 
 <style scoped lang="less">
-  .fade-enter-active, .fade-leave-active {
-    transition: opacity .5s;
-  }
-  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-    opacity: 0;
-  }
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
 .home {
   background: url(../../static/bg.png) no-repeat;
   background-size: 100% 100%;
