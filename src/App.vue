@@ -12,22 +12,24 @@ export default {
     }
   },
   created() {
+    this.$router.push('/')
     this.slice(location.href);
   },
   methods: {
     slice(url) {
-      for (let i = 0; i < url.slice(44, -2).split('&').length; i++) {
+      var a =url.split('?')[1].slice(0,-2);
+      for (let i = 0; i < a.split('&').length; i++) {
         this.initData.push(
-          url
-            .slice(44, -2)
-            .split('&')
+         a.split('&')
             [i].split('=')[1]
         );
       }
+      return
       this.getJsSign();
     },
     getJsSign() {
       var self = this;
+      let url = location.href.split('#')[0];
       api.getJsSign(url).then(res => {
         if (res.data.code == 200) {
           self.wx.config({

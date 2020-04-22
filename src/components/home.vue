@@ -14,21 +14,47 @@ export default {
   name: 'home',
   data() {
     return {
-      show: false
+      show: false,
+      initData:[],
+      isbutton:false,
+      clickNum:0
     };
   },
   created() {
+    this.slice(location.href)
   },
   methods: {
+    slice(url) {
+      var a =url.split('?')[1].slice(0,-2);
+      for (let i = 0; i < a.split('&').length; i++) {
+        this.initData.push(
+         a.split('&')
+            [i].split('=')[1]
+        );
+      }
+      console.log(this.initData);
+      this.getInfo(this.initData)
+    },
     //获取用户信息
-    getInfo(){
-      api.info().then((res) => {
+    getInfo(e){
+      api.info(e).then((res) => {
         if(res.data.code==200){
-          console.log(res.data)
+          this.isbutton=true;
+          localStorage.setItem('info',JSON.stringify(res.data.data))
+        }else{
+          this.$layer.msg(res.msg)
         }
       });
     },
     goWeb(e) {
+      console.log(this.isbutton)
+      if(!this.isbutton){
+        this.clickNum++;
+        if(this.clickNum>=10){
+          this.$layer.msg('请耐心等待，或刷新重试')
+        }
+        return
+      }
       this.$router.push(e);
     },
     alertImg(e) {

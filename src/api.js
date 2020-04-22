@@ -10,8 +10,8 @@ axios.defaults.withCredentials = true;
 //POST传参序列化(添加请求拦截器)
 axios.interceptors.request.use((config) => {
     //在发送请求之前做某件事
-    if(JSON.parse(localStorage.getItem('userInfo'))){
-      let  token =JSON.parse(localStorage.getItem('userInfo')).user.token;
+   if(localStorage.getItem('info')){
+      let  token =JSON.parse(localStorage.getItem('info')).token;
       config.headers.token = token;
     }
     return config;
@@ -28,14 +28,17 @@ const  getJsSign=(data)=>{
 	})
 }
 const info =(data)=>{
-  return axios.post('/labor/index/info/'+data.openid+'/'+data.customerld)
+  return axios.post('/labor/index/info/'+data[0]+'/'+data[1])
 }
 const rank=()=>{
   return axios.get('/labor/star/rank')
 }
-
+const draw=(data)=>{
+  return axios.post('/labor/certificate/draw/'+data)
+}
 export default{
 getJsSign,
 rank,
-info
+info,
+draw
 }

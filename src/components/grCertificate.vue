@@ -1,10 +1,10 @@
 <template>
   <div class="grCertificate">
     <div class="grCertificate-title">我的光荣证</div>
-    <div class="certificate" :class="inMoveAnimation?'aniTop':''">
+    <div class="certificate" :class="inMoveAnimation ? 'aniTop' : ''" @animationend="moveEnd">
       <div class="userName">
-        <i class="icon" :style="{ backgroundImage: 'url(' + userinfo.useImg + ')' }"></i>
-        <p>{{ userinfo.name }}</p>
+        <i class="icon" :style="{ backgroundImage: 'url(' + userinfo.headImgUrl + ')' }"></i>
+        <p>{{ userinfo.nickName }}</p>
       </div>
       <div class="certificate-title">光荣证</div>
       <div class="certificate-star">
@@ -16,124 +16,224 @@
             :class="inAnimation == index ? 'anim' : ''"
             @animationend="inAnimation = 6"
             :key="index"
-            :style="{ backgroundImage: 'url(../../static/' + (item ? 'icon1' : 'icon2') + '.png)' }"
+            :style="{ backgroundImage: 'url(./static/' + (item ? 'icon1' : 'icon2') + '.png)' }"
           ></li>
         </ul>
         <ul>
           <li
             class="star"
             v-for="(item, index) in isIcon"
-            :key='index'
-            :style="{ backgroundImage: 'url(../../static/' + (item ? 'icon1' : 'icon2') + '.png)' }"
+            :key="index"
+            :style="{ backgroundImage: 'url(./static/' + (item ? 'icon1' : 'icon2') + '.png)' }"
           ></li>
         </ul>
       </div>
-      <p class="certificate-text">{{ userinfo.text1 }}</p>
-      <p class="certificate-text">{{ userinfo.text2 }}</p>
+      <p class="certificate-text">{{ userText.text1 }}</p>
+      <p class="certificate-text">{{ userText.text2 }}</p>
     </div>
     <div class="box">
       <div class="firstLi">
-        <div>礼品名称</div>
+        <div>礼品名称12</div>
         <div>中奖时间</div>
       </div>
-      <ul>
+      <ul v-show="isShowPrize=='prize'">
         <li v-for="(item, index) in giftData">
-          <div>{{ item.name }}</div>
-          <div>{{ item.time }}</div>
+          <div>{{ item.prizeName }}</div>
+          <div>{{ item.insertTime }}</div>
+        </li>
+        <li v-for="item in liNum">
+          <div></div>
+          <div></div>
         </li>
       </ul>
+      <div class="wait" v-show="isShowPrize=='wait'">
+         查询中...
+         <div class='loading'></div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import api from '../api.js';
 export default {
   name: 'grCertificate',
   data() {
     return {
       userinfo: {
         name: '青西',
-        useImg: 'https://pic.cwyyt.cn/upload/img/20200420/152603263_useImg.png',
-        text1: '人生是不断的奋斗过程，',
-        text2:'需要你的勤劳勇敢。'
+        useImg: 'https://pic.cwyyt.cn/upload/img/20200420/152603263_useImg.png'
       },
-      isIcon: [false, false, false, false, false],
-      giftData: [
-        { name: 'DM物质', time: '2020-05-03 08:00:52' },
-        { name: 'DM物质', time: '2020-05-03 08:00:52' },
-        { name: 'DM物质', time: '2020-05-03 08:00:52' },
-        { name: 'DM物质', time: '2020-05-03 08:00:52' },
-        { name: 'DM物质', time: '2020-05-03 08:00:52' },
-        { name: 'DM物质', time: '2020-05-03 08:00:52' },
-        { name: 'DM物质', time: '2020-05-03 08:00:52' },
-        { name: 'DM物质', time: '2020-05-03 08:00:52' },
-        { name: 'DM物质', time: '2020-05-03 08:00:52' },
-        { name: 'DM物质', time: '2020-05-03 08:00:52' },
-        { name: 'DM物质', time: '2020-05-03 08:00:52' },
-        { name: 'DM物质', time: '2020-05-03 08:00:52' }
-      ],
+      userText: {
+        text1: '人生是不断的奋斗过程，',
+        text2: '需要你的勤劳勇敢。'
+      },
+      // isIcon: [false, false, false, false, false],
+      giftData: [],
       inAnimation: 6,
-      dd: 0,
-      inMoveAnimation:false
+      //需要闪几个星星
+      starNum: 0,
+      inMoveAnimation: false,
+      //当前星星数
+      nowStar:0,
+      //是否显示下面奖品列表
+      isShowPrize:'wait'
     };
   },
+  watch:{
+    nowStar(){
+      // console.log(this.inAnimation)
+    }
+  },
+  computed: {
+    liNum() {
+      if (this.giftData.length <= 7) {
+        return 7 - this.giftData.length;
+      } else {
+        return 0;
+      }
+    },
+    isIcon(){
+      var a =[false, false, false, false, false];
+      for(let i =0;i<this.nowStar;i++){
+        a[i]=true
+      };
+      return a
+    }
+  },
   mounted() {
-    // this.fn(5);
+    this.userinfo = JSON.parse(localStorage.getItem('info'));
+    this.showStar(this.userinfo);
+    this.getDraw();
   },
   methods: {
-    //连续触发
-    fn(e) {
+    //星星动画
+    showStar(e) {
+      var self =this;
+      //假设e.num是显示星数
+      self.nowStar=e.starView%5;
+      console.log(self.nowStar)
+      if (e.star - e.starView > 0) {
+        setTimeout(()=>{
+          self.flashStar(e.star - e.starView,e.starView%5);
+        },1000)
+      }
+    },
+    //闪几个星
+    flashStar(e, f) {
       var self = this;
+      self.starNum=e;
+      if (self.starNum <=0) {
+        return;
+      }
+      //e闪几颗星，f从第几颗开始闪
       setTimeout(() => {
-        self.playAnimation(self.dd);
-        self.dd++;
-        if (self.dd >= e) {
+        self.inAnimation = f % 5;
+        self.nowStar=f%5+1;
+        if (f >= 4) {
+          self.starNum--;
+          self.playMoveAnimation();
           return;
         }
-        self.fn(e);
-      }, 1500);
-    },
-    playMoveAnimation(){
-      var self =this;
-      this.inMoveAnimation=true;
-      setTimeout(()=>{
-        self.inMoveAnimation=false
-      },2000)
-    },
-    //触发动画
-    playAnimation(e) {
-      this.inAnimation = e;
-      this.isIcon[e] = true;
+        self.flashStar(e-1, f + 1);
+      }, 500);
+  },
+
+  //获取用户信息
+  getInfo(e) {
+    api.info(e).then(res => {
+      if (res.data.code == 200) {
+        this.isbutton = true;
+        localStorage.setItem('info', JSON.stringify(res.data.data));
+      } else {
+        this.$layer.msg(res.msg);
+      }
+    });
+  },
+  getDraw() {
+    var self = this;
+    self.isShowPrize='wait';
+    let data = JSON.parse(localStorage.getItem('info')).openid;
+    api.draw(data).then(res => {
+      if (res.data.code == 200) {
+        self.giftData = res.data.data;
+        self.isShowPrize='prize';
+      } else {
+        self.$layer.msg(res.data.msg);
+      }
+    });
+  },
+  playMoveAnimation() {
+    this.inMoveAnimation = true;
+  },
+  moveEnd(){
+    var self=this;
+    setTimeout(()=>{
+      if(self.nowStar==5){
+        console.log(self.starNum)
+        self.nowStar=0;
+        self.flashStar(this.starNum,self.nowStar);
+      }
+
+    },1000)
+    setTimeout(()=>{
+       self.inMoveAnimation = false;
+    },2000)
+    // this.inMoveAnimation=false
+  },
+  //触发动画
+  playAnimation(e) {
+    if ((e + 1) % 5 === 0) {
+      this.nowStar=0
     }
+    this.inAnimation = e;
+    this.nowStar = e;
   }
-};
+}}
 </script>
 
 <style scoped lang="less">
+  .wait{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-weight: 700;
+    width: 100%;
+    height: 70%;
+    .loading{
+      background: url(../../static/loading.gif) no-repeat;
+      width: 50px;
+      margin-top: 20px;
+      height: 50px;
+      background-size: 100% 100%;
+    }
+  }
+
 .aniTop {
   animation-duration: 2s;
-  animation-timing-function:ease-in;
+  animation-timing-function: ease-in;
   animation-name: move;
   animation-fill-mode: forwards;
 }
 .anim {
-  animation-duration: 1s;
+  animation-duration: 0.5s;
   animation-name: twinkle;
   animation-fill-mode: forwards;
 }
 @keyframes move {
   0% {
-    left:0 ;
+    left: 0;
   }
-  89%{
-    left: 750px;
+  70% {
+    left: -750px;
     opacity: 0;
   }
-  90%{
+  71% {
     left: 0;
     opacity: 0;
   }
-  100%{
+  100% {
     opacity: 1;
   }
 }

@@ -9,10 +9,16 @@
       </div>
       <ul>
         <li v-for="(item, index) in listData">
-          <div>{{ item.pm }}</div>
-          <div>{{ item.bh }}</div>
-          <div class="longText">{{ item.name }}</div>
+          <div>{{ item.rank }}</div>
+          <div>{{ item.memberNo}}</div>
+          <div class="longText">{{ item.nickName }}</div>
           <div>{{ item.star }}</div>
+        </li>
+        <li v-for="item in liNum">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
         </li>
       </ul>
     </div>
@@ -20,27 +26,38 @@
 </template>
 
 <script>
+import api from '../api.js';
 export default {
   name: 'grList',
   data() {
     return {
       listData: [
-        { pm: 'TOP 1', bh: '1245781', name: '啊是多久发货收到尽快发货', star: '9999' },
-        { pm: 'TOP 2', bh: '1245781', name: '啊是多久发货收到尽快发货', star: '9999' },
-        { pm: 'TOP 3', bh: '1245781', name: '啊是多久发货收到尽快发货', star: '9999' },
-        { pm: 'TOP 4', bh: '1245781', name: '啊是多久发货收到尽快发货', star: '9999' },
-        { pm: 'TOP 5', bh: '1245781', name: '啊是多久发货收到尽快发货', star: '9999' },
-        { pm: 'TOP 6', bh: '1245781', name: '啊是多久发货收到尽快发货', star: '9999' },
-        { pm: 'TOP 7', bh: '1245781', name: '啊是', star: '9999' },
-        { pm: 'TOP 8', bh: '1245781', name: '啊是多久发货收到尽快发货', star: '9999' },
-        { pm: 'TOP 9', bh: '1245781', name: '啊是多久发货收到尽快', star: '9999' },
-        { pm: 'TOP 10', bh: '1245781', name: '啊是多久发货收到尽快发货', star: '9999' },
-        { pm: 'TOP 11', bh: '1245781', name: '啊是多久发货收到尽快发货ghjk', star: '9999' },
-        { pm: 'TOP 12', bh: '1245781', name: '啊是多久发货收到尽快发货', star: '9999' },
-        { pm: 'TOP 13', bh: '1245781', name: '啊是多久发货收到尽快发货ghjk', star: '9999' },
-        { pm: 'TOP 14', bh: '1245781', name: '啊是多久发货收到尽快发货ghjk', star: '9999' }
       ]
     };
+  },
+  computed:{
+    liNum(){
+      if(this.listData.length<=10){
+        return 10-this.listData.length
+      }else{
+        return 0
+      }
+    }
+  },
+  created() {
+    this.getRank()
+  },
+  methods: {
+    getRank() {
+      var self= this;
+      api.rank().then(res => {
+        if (res.data.code == 200) {
+          self.listData=res.data.data
+        }else{
+          self.$layer.msg(res.data.msg)
+        }
+      });
+    }
   }
 };
 </script>
@@ -90,7 +107,7 @@ export default {
         box-sizing: border-box;
         justify-content: center;
         padding: 10px;
-        border-right: solid 5px #D5B79F;
+        border-right: solid 5px #d5b79f;
       }
       div:first-of-type {
         width: 15.6vw;
