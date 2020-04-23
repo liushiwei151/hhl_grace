@@ -21,6 +21,7 @@ export default {
     };
   },
   created() {
+		// this.slice('http://qrhhl.yunyutian.cn/labor/index.html?openid=oXslc08kYzfJOxRnOpnCQR4EYULU&customerId=0000002')
     this.slice(location.href)
   },
   methods: {
@@ -73,7 +74,7 @@ export default {
   opacity: 0;
 }
 .home {
-  background: url(../../static/bg.png) no-repeat;
+  background: url(../../static/bg.jpg) no-repeat;
   background-size: 100% 100%;
   position: fixed;
   width: 100%;
