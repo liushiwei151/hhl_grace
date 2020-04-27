@@ -26,11 +26,11 @@
 				<div>中奖时间</div>
 			</div>
 			<ul v-show="isShowPrize=='prize'">
-				<li v-for="(item, index) in giftData">
+				<li v-for="(item, index) in giftData" >
 					<div>{{ item.prizeName }}</div>
 					<div>{{ item.insertTime }}</div>
 				</li>
-				<li v-for="item in liNum">
+				<li v-for="(item,index) in liNum" >
 					<div></div>
 					<div></div>
 				</li>
@@ -40,7 +40,16 @@
 				<div class='loading'></div>
 			</div>
 		</div>
-	</div>
+   <transition name="fade">
+   <div class='alertActivi' v-show='isActivi'>
+        <div>
+          <p>您的光荣星级为<span>5</span>星</p>
+          <p>获得<span>{{alertName}}</span></p>
+          <i @click="sureAlert"></i>
+        </div>
+      </div>
+   </transition>
+  </div>
 </template>
 
 <script>
@@ -66,13 +75,13 @@
 				//当前星星数
 				nowStar: 0,
 				//是否显示下面奖品列表
-				isShowPrize: 'wait'
+				isShowPrize: 'wait',
+        //弹出奖品的名字
+        alertName:'',
+        isActivi:false,
+        //新增几次奖品
+        newPrize:1
 			};
-		},
-		watch: {
-			nowStar() {
-				// console.log(this.inAnimation)
-			}
 		},
 		computed: {
 			liNum() {
@@ -101,8 +110,8 @@
 				var self = this;
 				//假设e.num是显示星数
 				self.nowStar = e.starView % 5;
-				console.log(self.nowStar)
-				if (e.star - e.starView > 0) {
+        self.newPrize=Math.floor(e.star/5)-Math.floor(e.starView/5);
+				if (e.star - e.starView >0) {
 					setTimeout(() => {
 						self.flashStar(e.star - e.starView, e.starView % 5);
 					}, 1000)
@@ -155,15 +164,21 @@
 			playMoveAnimation() {
 				this.inMoveAnimation = true;
 			},
+      //确认弹窗
+      sureAlert(){
+        var self =this;
+        self.isActivi=false
+        self.flashStar(this.starNum, self.nowStar);
+      },
 			moveEnd() {
 				var self = this;
 				setTimeout(() => {
 					if (self.nowStar == 5) {
-						console.log(self.starNum)
-						self.nowStar = 0;
-						self.flashStar(this.starNum, self.nowStar);
+            self.nowStar = 0;
+            self.alertName=self.giftData[self.giftData.length-self.newPrize].prizeName;
+            self.isActivi=true;
+            return;
 					}
-
 				}, 1000)
 				setTimeout(() => {
 					self.inMoveAnimation = false;
@@ -183,6 +198,13 @@
 </script>
 
 <style scoped lang="less">
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: opacity 0.5s;
+  }
+  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0;
+  }
 	.wait {
 		display: flex;
 		justify-content: center;
@@ -244,10 +266,6 @@
 			opacity: 0;
 		}
 
-		// 100%{
-		//   transform: scale(2);
-		//   opacity: 0;
-		// }
 		to {
 			transform: scale(1);
 			opacity: 0;
@@ -260,7 +278,47 @@
 		height: 100%;
 		background: url(../../static/grCertificateBG.png) no-repeat;
 		background-size: 100% 100%;
-
+    //弹窗样式
+    .alertActivi{
+      position: fixed;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.6);
+      top: 0;
+      left: 0;
+      z-index: 95;
+      color: rgb(159,59,30);
+      font-size: 40px;
+      i{
+        display: block;
+        width: 365px;
+        height: 6vh;
+        background: url(../../static/button_sure.png) no-repeat;
+        background-size: 100% 100%;
+        margin-top: 4vh;
+      }
+      p{
+        margin-bottom: 2vh;
+      }
+      div{
+        background: url(../../static/activibg.png) no-repeat;
+        width:700px ;
+        height: 65.67vh;
+        background-size: 100% 100%;
+        padding-top: 35vh;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      span{
+        color: rgb(180,50,37) !important;
+        font-weight: 700;
+      }
+    }
 		.grCertificate-title {
 			margin-top: 3.823vh;
 			padding-left: 5.8vw;

@@ -21,8 +21,9 @@ export default {
     };
   },
   created() {
-		// this.slice('http://qrhhl.yunyutian.cn/labor/index.html?openid=oXslc08kYzfJOxRnOpnCQR4EYULU&customerId=0000002')
-    this.slice(location.href)
+    //todo 修改
+		this.slice('http://qrhhl.yunyutian.cn/labor/index.html?openid=oXslc0zEvV5RwspCzgWcQMmL-_yA&customerId=0000003#/')
+    // this.slice(location.href)
   },
   methods: {
     slice(url) {
