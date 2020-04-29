@@ -5,6 +5,14 @@
     <div class="box box2" @click="goWeb('grList')"></div>
     <transition name="fade">
       <div v-show="show" class="ruleContet"><div class="close" @click="alertImg(false)"></div></div>
+
+    </transition>
+    <transition name="fade">
+    <div class='popup' v-show="isPopup" >
+        <div class='homeAlert'>
+          <div class='alertSure' @click="isPopup=false"></div>
+        </div>
+      </div>
     </transition>
   </div>
 </template>
@@ -17,7 +25,8 @@ export default {
       show: false,
       initData:[],
       isbutton:false,
-      clickNum:0
+      clickNum:0,
+      isPopup:false
     };
   },
   created() {
@@ -34,22 +43,22 @@ export default {
             [i].split('=')[1]
         );
       }
-      console.log(this.initData);
       this.getInfo(this.initData)
     },
     //获取用户信息
     getInfo(e){
+      var self=this;
       api.info(e).then((res) => {
         if(res.data.code==200){
-          this.isbutton=true;
+          self.isbutton=true;
+          self.isPopup=res.data.data.isPopup;
           localStorage.setItem('info',JSON.stringify(res.data.data))
         }else{
-          this.$layer.msg(res.msg)
+          self.$layer.msg(res.data.msg)
         }
       });
     },
     goWeb(e) {
-      console.log(this.isbutton)
       if(!this.isbutton){
         this.clickNum++;
         if(this.clickNum>=10){
@@ -73,6 +82,33 @@ export default {
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
+}
+
+.popup{
+  position: fixed;
+  z-index: 95;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .homeAlert{
+    background: url(../../static/homeAlert.png) no-repeat;
+    background-size: 100% 100%;
+    width: 700px;
+    height: 48.3vh;
+    display: flex;
+    justify-content: center;
+    padding-top: 35vh;
+    box-sizing: border-box;
+    .alertSure{
+      background: url(../../static/button_sure.png) no-repeat;
+      background-size: 100% 100%;
+      width: 365px;
+      height: 6vh;
+    }
+  }
 }
 .home {
   background: url(../../static/bg.jpg) no-repeat;

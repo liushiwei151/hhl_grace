@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import home from '@/components/home'
 import grList from '@/components/grList'
 import grCertificate from '@/components/grCertificate'
+import starFlowing from '@/components/starFlowing'
 
 Vue.use(Router)
 
@@ -23,5 +24,10 @@ export default new Router({
       name: 'grList',
       component: grList
     },
+    {
+      path:'/starFlowing',
+      name:'starFlowing',
+      component:starFlowing
+    }
   ]
 })
