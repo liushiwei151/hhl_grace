@@ -55,7 +55,7 @@
               if(res.type==1){
                 aName='扫码';
               }else if(res.type==2){
-                aName='首页';
+                aName='签到';
               }else{
                 aName=res.type;
               }
