@@ -139,7 +139,6 @@ export default {
     //星星动画
     showStar(e) {
       var self = this;
-      //假设e.num是显示星数
       self.nowStar = e.starView % 5;
       self.newPrize = Math.floor(e.star / 5) - Math.floor(e.starView / 5);
       if (e.star - e.starView > 0) {
@@ -200,6 +199,9 @@ export default {
       var self = this;
       self.isActivi = false;
       self.flashStar(this.starNum, self.nowStar);
+	  setTimeout(()=>{
+		  self.prizeAlert=false;
+	  },2000)
     },
     moveEnd() {
       var self = this;
@@ -207,6 +209,7 @@ export default {
         if (self.nowStar == 5) {
           self.nowStar = 0;
           self.alertName = self.giftData[self.giftData.length - self.newPrize].prizeName;
+		  self.newPrize--;
           self.isActivi = true;
           return;
         }
@@ -480,7 +483,7 @@ export default {
     }
 
     ul {
-      height: 61.0524vh;
+      height: 42vh;
       overflow: hidden;
       overflow-y: auto;
     }
