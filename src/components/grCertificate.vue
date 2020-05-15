@@ -208,8 +208,8 @@ export default {
       setTimeout(() => {
         if (self.nowStar == 5) {
           self.nowStar = 0;
+		  self.newPrize++;
           self.alertName = self.giftData[self.giftData.length - self.newPrize].prizeName;
-		  self.newPrize--;
           self.isActivi = true;
           return;
         }
